@@ -12,6 +12,8 @@ public class RedLightGreenLight : MonoBehaviour
     public float intensityMultiplier = 1f;
     public int currentRound = 1;
 
+    public bool isListening = false;
+
     public SpriteRenderer[] wallSprites;
 
     public Transform lookTarget;
@@ -62,14 +64,16 @@ public class RedLightGreenLight : MonoBehaviour
         {
             case RedGreenState.Green:
                 ChangeColor("#00FF00");
+                isListening = false;
                 ResetPlayerHeat();
-                MoveTargetTo(30, 0, 0);
+                LookAt(30, 0, 0);
                 StartCoroutine(GreenState());
                 break;
 
             case RedGreenState.Red:
                 ChangeColor("#FF0000");
-                MoveTargetTo(20, 0, 0);
+                isListening = true;
+                LookAt(20, 0, 0);
                 StartCoroutine(RedState());
                 break;
                 
@@ -116,7 +120,7 @@ public class RedLightGreenLight : MonoBehaviour
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, turnSpeed * Time.deltaTime);
     }
 
-    void MoveTargetTo(float x, float y, float z)
+    void LookAt(float x, float y, float z)
     {
         lookTarget.transform.position = new Vector3(x, y, z);
     }
@@ -138,6 +142,9 @@ public class RedLightGreenLight : MonoBehaviour
         {
 
             yield return new WaitForSeconds(Random.Range(4f, 7f));
+            LookAt(30, 0, 0);
+            yield return new WaitForSeconds(1);
+
             ChangeState(RedGreenState.Green);
         }
     }
