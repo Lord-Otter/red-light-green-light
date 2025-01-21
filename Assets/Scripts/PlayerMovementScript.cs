@@ -5,7 +5,6 @@ using UnityEngine;
 public class PlayerMovementScript : MonoBehaviour
 {
     public float moveSpeed = 20;
-    public bool isMoving = false;
 
     private Rigidbody2D rb;
     public GameObject player;

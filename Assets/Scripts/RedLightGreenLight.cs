@@ -7,7 +7,6 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 public class RedLightGreenLight : MonoBehaviour
 {
     public float turnSpeed;
-    public float turnSpeedDefault;
 
     public float intensityMultiplier = 1f;
     public int currentRound = 1;
@@ -17,6 +16,7 @@ public class RedLightGreenLight : MonoBehaviour
     public SpriteRenderer[] wallSprites;
 
     public Transform lookTarget;
+    public ConeLOSScript coneLOSScript;
 
     private enum RedGreenState
     {
@@ -29,16 +29,14 @@ public class RedLightGreenLight : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        turnSpeedDefault = turnSpeed;
         currentRound = 1;
         intensityMultiplier = 1f;
 
-        
+        coneLOSScript = GetComponent<ConeLOSScript>();
 
         lookTarget = GameObject.Find("Look_Target").transform;
 
         GameObject[] wallObjects = GameObject.FindGameObjectsWithTag("Border_Walls");
-
         wallSprites = new SpriteRenderer[wallObjects.Length];
 
         for (int i = 0; i < wallObjects.Length; i++)
@@ -63,7 +61,8 @@ public class RedLightGreenLight : MonoBehaviour
         switch (currentState)
         {
             case RedGreenState.Green:
-                ChangeColor("#00FF00");
+                ChangeWallColor("#00FF00");
+                coneLOSScript.ChangeConeColor("#400000");
                 isListening = false;
                 ResetPlayerHeat();
                 LookAt(30, 0, 0);
@@ -71,20 +70,22 @@ public class RedLightGreenLight : MonoBehaviour
                 break;
 
             case RedGreenState.Red:
-                ChangeColor("#FF0000");
+                ChangeWallColor("#FF0000");
+                coneLOSScript.ChangeConeColor("#400000");
                 isListening = true;
                 LookAt(20, 0, 0);
                 StartCoroutine(RedState());
                 break;
                 
             case RedGreenState.Alert:
-                ChangeColor("#FF0000");
+                ChangeWallColor("#FF0000");
+                coneLOSScript.ChangeConeColor("#C80028");
                 StartCoroutine(AlertState());
                 break;
         }
     }
 
-    void ChangeColor(string hexColor)
+    void ChangeWallColor(string hexColor)
     {
         if (ColorUtility.TryParseHtmlString(hexColor, out Color newColor))
         {
@@ -127,7 +128,7 @@ public class RedLightGreenLight : MonoBehaviour
 
     IEnumerator GreenState()
     {
-        turnSpeed = turnSpeedDefault;
+        turnSpeed = 300;
         while (true)
         {
 
@@ -142,10 +143,10 @@ public class RedLightGreenLight : MonoBehaviour
         {
 
             yield return new WaitForSeconds(Random.Range(4f, 7f));
-            LookAt(30, 0, 0);
+            //LookAt(30, 0, 0);
             yield return new WaitForSeconds(1);
 
-            ChangeState(RedGreenState.Green);
+            //ChangeState(RedGreenState.Green);
         }
     }
 
